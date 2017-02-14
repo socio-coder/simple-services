@@ -1,0 +1,15 @@
+{
+  "name": "xenia-bot-service",
+  "version": "0.1.0",
+  "description": "Coming Soon World !!",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ajit Singh",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.6.0",
+    "express": "^4.14.1"
+  }
+}
