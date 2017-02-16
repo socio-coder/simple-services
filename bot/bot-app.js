@@ -2,14 +2,14 @@ var builder = require('botbuilder');
 
 /*importing intents */
 var greeting = require('./intents/greeting');
-var introduction = require('./intents/introduction');
+var hotel = require('./intents/hotel');
+var room = require('./intents/room');
+var activity = require('./intents/activity');
 
 var chatConnector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
-
-console.log(chatConnector);
 
 var bot = new builder.UniversalBot(chatConnector);
 
@@ -26,7 +26,14 @@ bot.dialog('/', intent);
 
 
 intent.matches('greeting', function(session) { greeting(session, builder); });
-intent.matches('introduction', function(session) { introduction(session, builder) });
+intent.matches('hotel.bookroom', [function(session, args, next) { hotel.bookRoom(session, args, next, builder) }, function(session, results, builder) { hotel._bookRoom(session, results, builder) }]);
+intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
+intent.matches('food.menu', function(session, args, next) {});
+intent.matches('room.device.on', function(session, args, next) {});
+intent.matches('room.device.off', function(session, args, next) {});
+intent.matches('room.device.lights', function(session, args, next) {});
+intent.matches('user.entertain', function(session, args, next) {});
+intent.matches('places.nearby', function(session, args, next) {});
 intent.onDefault(builder.DialogAction.send("Sorry but sometime I don't know what you want and this is that exact moment !!"));
 
 module.exports = {
