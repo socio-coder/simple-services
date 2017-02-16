@@ -27,7 +27,7 @@ var bookRoom = function(session, args, next, builder) {
 var _bookRoom = function(session, results, builder) {
     location = results.response;
     console.log("You asked for", location);
-    session.send("You asked for", location);
+    session.send("You asked for " + location);
     // if (dates) {
     //     if (dates.length == 0) {
     //         session.dialogData.
