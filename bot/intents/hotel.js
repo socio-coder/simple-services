@@ -50,7 +50,7 @@ var _bookRoom = function(session, results, builder) {
             builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
             builder.CardAction.imBack(session, "select:100", "Select")
         ]);
-    var msg = new builder.Message(session).attachments([card1, card2, card3, card4]);
+    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card1, card2, card3, card4]);
     session.send(msg);
     location = results.response;
     console.log("You asked for", location);
