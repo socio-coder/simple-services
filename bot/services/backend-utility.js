@@ -1,4 +1,5 @@
 // var syncRequest = require('sync-request');
+var chronoNode = require('chrono-node');
 var url = "";
 
 function getHotels(userId, location, rating, dates, purpose) {
@@ -7,6 +8,9 @@ function getHotels(userId, location, rating, dates, purpose) {
     }
     if (typeof dates[1] != "string") {
         dates[1] = dates[1].entity;
+    }
+    for (var i in dates) {
+        dates[i] = chronoNode.parse(dates[i]);
     }
     console.log(userId, location, rating, dates, purpose);
 }

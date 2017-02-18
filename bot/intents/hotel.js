@@ -1,4 +1,3 @@
-var chronoNode = require('chrono-node');
 var backendUtility = require('../services/backend-utility');
 
 var location;
