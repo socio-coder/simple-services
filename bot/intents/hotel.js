@@ -1,5 +1,5 @@
 var chronoNode = require('chrono-node');
-// var backendUtility = require('../services/backend-utility');
+var backendUtility = require('../services/backend-utility');
 
 var location;
 var dates = [];
@@ -52,7 +52,6 @@ var getHotels02 = function(session, results, builder) {
     }
 };
 var getHotels03 = function(session, results, builder) {
-    console.log(results.response);
     rating = results.response.entity || results.response;
     if (dates) {
         if (dates.length == 0) {
@@ -64,7 +63,7 @@ var getHotels03 = function(session, results, builder) {
                 builder.Prompts.text(session, "Please enter another date.");
             } else {
                 if (dates.length == 2) {
-                    session.send("You selected " + location + " " + purpose + " " + rating + " " + JSON.stringify(dates));
+                    backendUtility.getHotels('1234', location, ratings, dates, purpose);
                     // session.dialogData.inputStatus = 2;
                     // next({ response: rating.entity });
                 }
@@ -73,15 +72,14 @@ var getHotels03 = function(session, results, builder) {
     }
 };
 var getHotels04 = function(session, results, builder) {
-    console.log(results.response);
     switch (session.dialogData.inputStatus) {
         case 0:
-            dates.push(chronoNode.parseDate(results.response));
+            dates.push(results.response);
             builder.Prompts.text(session, "Please enter your check out date.");
             break;
         case 1:
-            dates.push(chronoNode.parseDate(results.response));
-            session.send("You selected " + location + " " + purpose + " " + rating + " " + JSON.stringify(dates));
+            dates.push(results.response);
+            backendUtility.getHotels('1234', location, ratings, dates, purpose);
             break;
         default:
             session.send("Something wrong with me, I need to talk to my developer !!");
@@ -89,9 +87,8 @@ var getHotels04 = function(session, results, builder) {
     }
 };
 var getHotels05 = function(session, results, builder) {
-    console.log(results.response);
-    dates.push(chronoNode.parseDate(results.response));
-    session.send("You selected " + location + " " + JSON.stringify(purpose) + " " + JSON.stringify(rating) + " " + JSON.stringify(dates));
+    dates.push(results.response);
+    backendUtility.getHotels('1234', location, ratings, dates, purpose);
 }
 var bookRoom = function(session, args, next, builder) {
 
