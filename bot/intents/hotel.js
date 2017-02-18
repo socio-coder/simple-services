@@ -94,7 +94,7 @@ var getHotels05 = function(session, results, builder) {
 }
 
 var showHotels = function(session, hotels, builder) {
-    var msg = new builder.Message(session)
+    var msg = new builder.HeroCard(session)
         .textFormat(builder.TextFormat.xml)
         .attachmentLayout(builder.AttachmentLayout.carousel)
         .attachments([
