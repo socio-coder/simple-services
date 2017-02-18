@@ -62,7 +62,8 @@ var getHotels03 = function(session, results, builder) {
                 builder.Prompts.text(session, "Please enter another date.");
             } else {
                 if (dates.length == 2) {
-                    backendUtility.getHotels('1234', location, rating, dates, purpose);
+                    var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
+                    showHotels(session, hotels, builder);
                     // session.dialogData.inputStatus = 2;
                     // next({ response: rating.entity });
                 }
@@ -78,7 +79,8 @@ var getHotels04 = function(session, results, builder) {
             break;
         case 1:
             dates.push(results.response);
-            backendUtility.getHotels('1234', location, rating, dates, purpose);
+            var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
+            showHotels(session, hotels, builder);
             break;
         default:
             session.send("Something wrong with me, I need to talk to my developer !!");
@@ -87,8 +89,21 @@ var getHotels04 = function(session, results, builder) {
 };
 var getHotels05 = function(session, results, builder) {
     dates.push(results.response);
-    backendUtility.getHotels('1234', location, rating, dates, purpose);
+    var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
+    showHotels(session, hotels, builder);
 }
+
+var showHotels = function(session, hotels, builder) {
+    var msg = new builder.Message(session)
+        .textFormat(builder.TextFormat.xml)
+        .attachmentLayout(builder.AttachmentLayout.carousel)
+        .attachments([
+            new builder.HeroCard(session)
+            .buttons(hotels)
+        ]);
+    session.send(msg);
+};
+
 var bookRoom = function(session, args, next, builder) {
 
 };

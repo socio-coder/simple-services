@@ -12,7 +12,7 @@ function getHotels(userId, location, rating, dates, purpose) {
     for (var i in dates) {
         dates[i] = chronoNode.parseDate(dates[i]);
     }
-    console.log(userId, location, rating, dates, purpose);
+    return [userId, location, rating, dates, purpose];
 }
 
 module.exports = {
