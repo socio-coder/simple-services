@@ -26,7 +26,12 @@ bot.dialog('/', intent);
 
 
 intent.matches('greeting', function(session) { greeting(session, builder); });
-intent.matches('hotel.bookroom', [function(session, args, next) { hotel.bookRoom(session, args, next, builder) }, function(session, results) { hotel._bookRoom(session, results, builder) }]);
+intent.matches('hotel.bookroom', [
+    function(session, args, next) { hotel.getHotels(session, args, next, builder) },
+    function(session, results) { hotel._getHotels(session, results, builder) },
+    function(session, results) { hotel.__getHotels(session, results, builder) },
+    function(session, results) { hotel.___getHotels(session, results, builder) }
+]);
 intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
 intent.matches('food.menu', function(session, args, next) {});
 intent.matches('room.device.on', function(session, args, next) {});

@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.5.0",
-    "express": "^4.14.1"
+    "chrono-node": "^1.2.5",
+    "express": "^4.14.1",
+    "sync-request": "^4.0.1"
   }
 }
