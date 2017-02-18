@@ -94,14 +94,43 @@ var getHotels05 = function(session, results, builder) {
 }
 
 var showHotels = function(session, hotels, builder) {
-    console.log("Inside show hotels.")
-    var card = new builder.HeroCard(session)
+    var card1 = new builder.HeroCard(session)
         .title("Hotel Residency")
         .text("Hotel Residency is a lot awesome.")
         .images([
             builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-normal.png")
-        ]).buttons([hotels[0]]);
-    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card]);
+        ]).buttons([
+            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
+            builder.CardAction.imBack(session, "select:100", "Select")
+        ]);
+    var card2 = new builder.HeroCard(session)
+        .title("Hotel Residency")
+        .text("Hotel Residency is a lot awesome.")
+        .images([
+            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-deluxe.png")
+        ]).buttons([
+            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
+            builder.CardAction.imBack(session, "select:100", "Select")
+        ]);
+    var card3 = new builder.HeroCard(session)
+        .title("Hotel Residency")
+        .text("Hotel Residency is a lot awesome.")
+        .images([
+            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-hotel.png")
+        ]).buttons([
+            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
+            builder.CardAction.imBack(session, "select:100", "Select")
+        ]);
+    var card4 = new builder.HeroCard(session)
+        .title("Hotel Residency")
+        .text("Hotel Residency is a lot awesome.")
+        .images([
+            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/sample-image.png")
+        ]).buttons([
+            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
+            builder.CardAction.imBack(session, "select:100", "Select")
+        ]);
+    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card1, card2, card3, card4]);
     session.send(msg);
 };
 
