@@ -18,6 +18,7 @@ var getHotels = function(session, args, next, builder) {
     }
 };
 var getHotels01 = function(session, results, builder) {
+    console.log(results.response);
     location = results.response.entity | results.response;
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
@@ -34,6 +35,7 @@ var getHotels01 = function(session, results, builder) {
     }
 };
 var getHotels02 = function(session, results, builder) {
+    console.log(results.response);
     purpose = results.response.entity | results.response;
     if (!rating) {
         var buttonsList = ['5 star', '4 star', '3 star', 'all'];
@@ -50,6 +52,7 @@ var getHotels02 = function(session, results, builder) {
     }
 };
 var getHotels03 = function(session, results, builder) {
+    console.log(results.response);
     rating = results.response.entity | results.response;
     if (dates) {
         if (dates.length == 0) {
@@ -70,6 +73,7 @@ var getHotels03 = function(session, results, builder) {
     }
 };
 var getHotels04 = function(session, results, builder) {
+    console.log(results.response);
     switch (session.dialogData.inputStatus) {
         case 0:
             dates.push(chronoNode.parseDate(results.response));
@@ -85,6 +89,7 @@ var getHotels04 = function(session, results, builder) {
     }
 };
 var getHotels05 = function(session, results, builder) {
+    console.log(results.response);
     dates.push(chronoNode.parseDate(results.response));
     session.send("You selected " + location + " " + JSON.stringify(purpose) + " " + JSON.stringify(rating) + " " + JSON.stringify(dates));
 }
