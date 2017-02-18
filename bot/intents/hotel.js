@@ -14,11 +14,11 @@ var getHotels = function(session, args, next, builder) {
     if (!location) {
         builder.Prompts.text(session, "Please enter the city ?");
     } else {
-        next({ response: location.entity });
+        next({ response: location });
     }
 };
 var getHotels01 = function(session, results, builder) {
-    location = results.response;
+    location = results.response.entity | results.response;
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
         var msg = new builder.Message(session)
@@ -30,11 +30,11 @@ var getHotels01 = function(session, results, builder) {
             ]);
         builder.Prompts.choice(session, "What is your purpose ?", buttonsList);
     } else {
-        next({ response: purpose.entity });
+        next({ response: purpose });
     }
 };
 var getHotels02 = function(session, results, builder) {
-    purpose = results.response;
+    purpose = results.response.entity | results.response;
     if (!rating) {
         var buttonsList = ['5 star', '4 star', '3 star', 'all'];
         var msg = new builder.Message(session)
@@ -46,11 +46,11 @@ var getHotels02 = function(session, results, builder) {
             ]);
         builder.Prompts.choice(session, "What is your preference ?", buttonsList);
     } else {
-        next({ response: rating.entity });
+        next({ response: rating });
     }
 };
 var getHotels03 = function(session, results, builder) {
-    rating = results.response;
+    rating = results.response.entity | results.response;
     if (dates) {
         if (dates.length == 0) {
             session.dialogData.inputStatus = 0;
