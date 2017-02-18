@@ -86,7 +86,7 @@ var getHotels04 = function(session, results, builder) {
 };
 var getHotels05 = function(session, results, builder) {
     dates.push(chronoNode.parseDate(results.response));
-    session.send("You selected " + location + " " + purpose + " " + rating + " " + JSON.stringify(dates));
+    session.send("You selected " + location + " " + JSON.stringify(purpose) + " " + JSON.stringify(rating) + " " + JSON.stringify(dates));
 }
 var bookRoom = function(session, args, next, builder) {
 
