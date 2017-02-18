@@ -72,11 +72,11 @@ var getHotels03 = function(session, results, builder) {
 var getHotels04 = function(session, results, builder) {
     switch (session.dialogData.inputStatus) {
         case 0:
-            dates.push(chrono.parseDate(results.response));
+            dates.push(chronoNode.parseDate(results.response));
             builder.Prompts.text(session, "Please enter your check out date.");
             break;
         case 1:
-            dates.push(chrono.parseDate(results.response));
+            dates.push(chronoNode.parseDate(results.response));
             session.send("You selected " + location + " " + purpose + " " + rating + " " + JSON.stringify(dates));
             break;
         default:
