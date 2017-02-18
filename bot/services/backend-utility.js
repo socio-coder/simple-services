@@ -9,7 +9,9 @@ function getHotels(userId, location, rating, dates, purpose) {
     if (typeof dates[1] != "string") {
         dates[1] = dates[1].entity;
     }
+    console.log(dates);
     for (var i in dates) {
+        console.log(dates[i]);
         dates[i] = chronoNode.parse(dates[i]);
     }
     console.log(userId, location, rating, dates, purpose);
