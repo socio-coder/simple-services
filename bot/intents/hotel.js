@@ -94,12 +94,14 @@ var getHotels05 = function(session, results, builder) {
 }
 
 var showHotels = function(session, hotels, builder) {
-    var msg = new builder.HeroCard(session)
+    console.log("Inside show hotels.")
+    var card = new builder.HeroCard(session)
         .title("Hotel Residency")
         .text("Hotel Residency is a lot awesome.")
         .images([
             builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-normal.png")
         ]).buttons(hotels);
+    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card]);
     session.send(msg);
 };
 
