@@ -1,7 +1,7 @@
 // var syncRequest = require('sync-request');
 var url = "";
 
-function getHotels(userId, location, ratings, dates, purpose) {
+function getHotels(userId, location, rating, dates, purpose) {
     if (typeof dates[0] != "string") {
         dates[0] = dates[0].entity;
     }
