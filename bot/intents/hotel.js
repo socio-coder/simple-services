@@ -19,7 +19,7 @@ var getHotels = function(session, args, next, builder) {
 };
 var getHotels01 = function(session, results, builder) {
     console.log(results.response);
-    location = results.response.entity | results.response;
+    location = results.response.entity || results.response;
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
         var msg = new builder.Message(session)
@@ -36,7 +36,7 @@ var getHotels01 = function(session, results, builder) {
 };
 var getHotels02 = function(session, results, builder) {
     console.log(results.response);
-    purpose = results.response.entity | results.response;
+    purpose = results.response.entity || results.response;
     if (!rating) {
         var buttonsList = ['5 star', '4 star', '3 star', 'all'];
         var msg = new builder.Message(session)
@@ -53,7 +53,7 @@ var getHotels02 = function(session, results, builder) {
 };
 var getHotels03 = function(session, results, builder) {
     console.log(results.response);
-    rating = results.response.entity | results.response;
+    rating = results.response.entity || results.response;
     if (dates) {
         if (dates.length == 0) {
             session.dialogData.inputStatus = 0;
