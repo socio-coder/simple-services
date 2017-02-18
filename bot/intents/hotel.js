@@ -1,7 +1,6 @@
 var location;
 var dates;
 var rating;
-
 var bookRoom = function(session, args, next, builder) {
 
     location = builder.EntityRecognizer.findEntity(args.entities, 'location');
@@ -14,24 +13,25 @@ var bookRoom = function(session, args, next, builder) {
     } else {
         next({ response: location.entity });
     }
-
-    // if (dates.length < 2) {
-    //     console.log("Both dates not present");
-    // }
-
-    // if (!rating) {
-    //     console.log("Rating not present");
-    // }
-
 };
 var _bookRoom = function(session, results, builder) {
+    console.log(builder);
     location = results.response;
+    var card = new builder.HeroCard(session)
+        .title("Hotel Residency")
+        .text("Hotel Residency is a lot awesome.")
+        .images([
+            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-normal.png")
+        ]);
+    var msg = new builder.Message(session).attachments([card]);
+    session.send(msg);
     console.log("You asked for", location);
     session.send("You asked for " + location);
     // if (dates) {
     //     if (dates.length == 0) {
-    //         session.dialogData.
     //         builder.Prompts.text(session, "Please provide checkin date ?");
+    //     }else{
+
     //     }
     // }
 };
