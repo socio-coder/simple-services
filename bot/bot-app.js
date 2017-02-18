@@ -31,7 +31,8 @@ intent.matches('hotel.bookroom', [
     function(session, results) { hotel.getHotels01(session, results, builder) },
     function(session, results) { hotel.getHotels02(session, results, builder) },
     function(session, results) { hotel.getHotels03(session, results, builder) },
-    function(session, results) { hotel.getHotels04(session, results, builder) }
+    function(session, results) { hotel.getHotels04(session, results, builder) },
+    function(session, results) { hotel.getHotels05(session, results, builder) }
 ]);
 intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
 intent.matches('food.menu', function(session, args, next) {});

@@ -104,7 +104,8 @@ module.exports = {
     getHotels01: getHotels01,
     getHotels02: getHotels02,
     getHotels03: getHotels03,
-    getHotels04: getHotels04
+    getHotels04: getHotels04,
+    getHotels05: getHotels05
         // bookRoom: bookRoom,
         // _bookRoom: _bookRoom,
         // getBooking: getBooking
