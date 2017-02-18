@@ -37,7 +37,7 @@ var _getHotels = function(session, results, builder) {
 var __getHotels = function(session, results, builder) {
     purpose = results.response;
     if (!rating) {
-        ession.send("What is your preference ?");
+        session.send("What is your preference ?");
         var buttonsList = ['5 star', '4 start', '3 star', 'all'];
         var msg = new builder.Message(session)
             .textFormat(builder.TextFormat.xml)
