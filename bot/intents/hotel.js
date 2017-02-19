@@ -24,12 +24,12 @@ var getHotels = function(session, args, next, builder) {
                     .attachments([
                         new builder.HeroCard(session)
                         .buttons([
-                            builder.CardAction.imBack(session, remberedHotels[0], remberedHotels[0])
-                            // builder.CardAction.imBack(session, remberedHotels[1], remberedHotels[1]),
+                            builder.CardAction.imBack(session, remberedHotels[0], remberedHotels[0]),
+                            builder.CardAction.imBack(session, remberedHotels[1], remberedHotels[1])
                             // builder.CardAction.imBack(session, remberedHotels[2], remberedHotels[2])
                         ])
                     ]);
-                session.send(msg);
+                builder.Prompts.text(session, builder.Prompts.text(session, "Please enter the city ?"));
             } else {
                 builder.Prompts.text(session, "Please enter the city ?");
             }
