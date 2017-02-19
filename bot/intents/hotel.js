@@ -42,7 +42,7 @@ var getHotels = function(session, args, next, builder) {
 };
 var getHotels01 = function(session, results, builder) {
     location = results.response.entity || results.response;
-    memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', location });
+    memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
         var msg = new builder.Message(session)
