@@ -41,7 +41,7 @@ var getHotels = function(session, args, next, builder) {
 };
 var getHotels01 = function(session, results, builder) {
     location = results.response.entity || results.response;
-    memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
+    session.userData.ltMem = memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
     session.save();
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
