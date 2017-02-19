@@ -5,6 +5,8 @@ var greeting = require('./intents/greeting');
 var hotel = require('./intents/hotel');
 var room = require('./intents/room');
 var activity = require('./intents/activity');
+var places = require('./intents/places');
+
 
 var chatConnector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -36,11 +38,11 @@ intent.matches('hotel.bookroom', [
 ]);
 intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
 intent.matches('food.menu', function(session, args, next) {});
-intent.matches('room.device.on', function(session, args, next) {});
-intent.matches('room.device.off', function(session, args, next) {});
-intent.matches('room.device.lights', function(session, args, next) {});
-intent.matches('user.entertain', function(session, args, next) {});
-intent.matches('places.nearby', function(session, args, next) {});
+intent.matches('room.device.on', function(session, args, next) { room.lightsOn(session, args, next, builder) });
+intent.matches('room.device.off', function(session, args, next) { room.lightsOff(session, args, next, builder) });
+intent.matches('room.device.lights', function(session, args, next) { room.lights(session, args, next, builder) });
+intent.matches('user.entertain', function(session, args, next) { activity.getEvents(session, args, next, builder) });
+intent.matches('places.nearby', function(session, args, next) { places.nearby(session, args, next, builder) });
 intent.onDefault(builder.DialogAction.send("Sorry but sometime I don't know what you want and this is that exact moment !!"));
 
 module.exports = {

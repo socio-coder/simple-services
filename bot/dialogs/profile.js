@@ -2,7 +2,7 @@ var builder = require('botbuilder');
 
 var library = new builder.Library('profile');
 
-var user = {};
+var user = {}; // age, gender,UID Number,
 
 library.dialog('/', [
     function(session) {
@@ -20,11 +20,23 @@ library.dialog('/', [
     },
     function(session, results) {
         user.email = results.response;
-        // mongoClient.registerUser(user, function(err, response) {
-        //     if (err) session.send("Registration process failed. Please try again later.");
-        //     if (!response.success) session.endDialog(response.result.message + "so we will do it later. Now how can I help you?");
-        //     if (response.success) session.endDialog(response.result.message + " Thank you for sharing your details. Now how can I help you?");
-        // });
+        builder.Prompts.text(session, 'How old are you ?');
+    },
+    function(session, results) {
+        user.age = results.response;
+        var buttonsList = ['Male', 'Female'];
+        var msg = new builder.Message(session)
+            .textFormat(builder.TextFormat.xml)
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments([
+                new builder.HeroCard(session)
+                .buttons(buttonsList)
+            ]);
+        builder.Prompts.choice(session, "Are you ", buttonsList);
+    },
+    function(session, results) {
+        user.gender = results.response;
+
     }
 ]);
 

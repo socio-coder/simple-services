@@ -22,7 +22,7 @@ var getHotels = function(session, args, next, builder) {
                 remberedHotels.forEach(function(element) {
                     buttonsList.push(builder.CardAction.imBack(session, element, element));
                 }, this);
-                var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text("Last time you searched for these.").buttons(buttonsList)]);
+                var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text("Last time you searched").buttons(buttonsList)]);
                 builder.Prompts.text(session, msg);
             } else {
                 builder.Prompts.text(session, "Please enter the city ?");
@@ -82,8 +82,6 @@ var getHotels03 = function(session, results, builder) {
                 if (dates.length == 2) {
                     var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
                     showHotels(session, hotels, builder);
-                    // session.dialogData.inputStatus = 2;
-                    // next({ response: rating.entity });
                 }
             }
         }
@@ -112,7 +110,7 @@ var getHotels05 = function(session, results, builder) {
 }
 
 var showHotels = function(session, hotels, builder) {
-    console.log("Inside show hotels.")
+    console.log("Inside show hotels.");
 
 };
 

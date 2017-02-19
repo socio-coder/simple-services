@@ -2,6 +2,11 @@
 var chronoNode = require('chrono-node');
 var url = "";
 
+
+function signUp(user) {
+    return "success";
+}
+
 function getHotels(userId, location, rating, dates, purpose) {
     if (typeof dates[0] != "string") {
         dates[0] = dates[0].entity;
