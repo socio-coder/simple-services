@@ -29,6 +29,7 @@ var getHotels = function(session, args, next, builder) {
                             // builder.CardAction.imBack(session, remberedHotels[2], remberedHotels[2])
                         ])
                     ]);
+                session.send(msg);
             } else {
                 builder.Prompts.text(session, "Please enter the city ?");
             }
