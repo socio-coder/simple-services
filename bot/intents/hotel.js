@@ -1,9 +1,11 @@
 var backendUtility = require('../services/backend-utility');
+var memoryUtility = require('../services/memory-utility');
 
 var location;
 var dates = [];
 var rating;
 var purpose;
+
 var getHotels = function(session, args, next, builder) {
 
     location = builder.EntityRecognizer.findEntity(args.entities, 'location');
@@ -11,14 +13,37 @@ var getHotels = function(session, args, next, builder) {
     rating = builder.EntityRecognizer.findEntity(args.entities, 'rating');
     purpose = builder.EntityRecognizer.findEntity(args.entities, 'purpose');
     if (!location) {
-        builder.Prompts.text(session, "Please enter the city ?");
+        if (memoryUtility.isFreshConversation(session.userData.stMem)) {
+            var remberedHotels = memoryUtility.rememberInfoBySubject(session.userData.ltMem, 'hotel.name');
+            console.log(remberedHotels);
+
+            if (remberedHotels.length != 0) {
+                session.send("Please enter the city ?")
+                var msg = new builder.Message(session)
+                    .textFormat(builder.TextFormat.xml)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments([
+                        new builder.HeroCard(session)
+                        .buttons([
+                            builder.CardAction.imBack(session, remberedHotels[0], remberedHotels[0]),
+                            builder.CardAction.imBack(session, remberedHotels[1], remberedHotels[1]),
+                            builder.CardAction.imBack(session, remberedHotels[2], remberedHotels[2])
+                        ])
+                    ]);
+            } else {
+
+                builder.Prompts.text(session, "Please enter the city ?");
+            }
+        } else {
+            next({ response: session.userData.stMem.content });
+        }
     } else {
         next({ response: location });
     }
 };
 var getHotels01 = function(session, results, builder) {
-    console.log(results.response);
     location = results.response.entity || results.response;
+    memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', location });
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
         var msg = new builder.Message(session)
@@ -34,7 +59,6 @@ var getHotels01 = function(session, results, builder) {
     }
 };
 var getHotels02 = function(session, results, builder) {
-    console.log(results.response);
     purpose = results.response.entity || results.response;
     if (!rating) {
         var buttonsList = ['5 star', '4 star', '3 star', 'all'];
@@ -94,44 +118,8 @@ var getHotels05 = function(session, results, builder) {
 }
 
 var showHotels = function(session, hotels, builder) {
-    var card1 = new builder.HeroCard(session)
-        .title("Hotel Residency")
-        .text("Hotel Residency is a lot awesome.")
-        .images([
-            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-normal.png")
-        ]).buttons([
-            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
-            builder.CardAction.imBack(session, "select:100", "Select")
-        ]);
-    var card2 = new builder.HeroCard(session)
-        .title("Hotel Residency")
-        .text("Hotel Residency is a lot awesome.")
-        .images([
-            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-deluxe.png")
-        ]).buttons([
-            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
-            builder.CardAction.imBack(session, "select:100", "Select")
-        ]);
-    var card3 = new builder.HeroCard(session)
-        .title("Hotel Residency")
-        .text("Hotel Residency is a lot awesome.")
-        .images([
-            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/fab-hotel.png")
-        ]).buttons([
-            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
-            builder.CardAction.imBack(session, "select:100", "Select")
-        ]);
-    var card4 = new builder.HeroCard(session)
-        .title("Hotel Residency")
-        .text("Hotel Residency is a lot awesome.")
-        .images([
-            builder.CardImage.create(session, "https://project-xenia-images.herokuapp.com/sample-image.png")
-        ]).buttons([
-            builder.CardAction.openUrl(session, "https://en.wikipedia.org/wiki/Space_Needle", "Wikipedia"),
-            builder.CardAction.imBack(session, "select:100", "Select")
-        ]);
-    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card1, card2, card3, card4]);
-    session.send(msg);
+    console.log("Inside show hotels.")
+
 };
 
 var bookRoom = function(session, args, next, builder) {
