@@ -18,17 +18,11 @@ var getHotels = function(session, args, next, builder) {
             console.log(remberedHotels);
             if (remberedHotels.length != 0) {
                 session.send("Please enter the city ?")
-                var msg = new builder.Message(session)
-                    .textFormat(builder.TextFormat.xml)
-                    .attachmentLayout(builder.AttachmentLayout.carousel)
-                    .attachments([
-                        new builder.HeroCard(session)
-                        .buttons([
-                            builder.CardAction.imBack(session, remberedHotels[0], remberedHotels[0])
-                            // builder.CardAction.imBack(session, remberedHotels[1], remberedHotels[1])
-                            // builder.CardAction.imBack(session, remberedHotels[2], remberedHotels[2])
-                        ])
-                    ]);
+                var buttonsList = [];
+                remberedHotels.forEach(function(element) {
+                    buttonsList.push(builder.CardAction.imBack(session, element, element));
+                }, this);
+                var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text("Last time you searched for these.").buttons(buttonsList)]);
                 builder.Prompts.text(session, msg);
             } else {
                 builder.Prompts.text(session, "Please enter the city ?");
