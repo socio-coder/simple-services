@@ -16,7 +16,6 @@ var getHotels = function(session, args, next, builder) {
         if (memoryUtility.isFreshConversation(session.userData.stMem)) {
             var remberedHotels = memoryUtility.rememberInfoBySubject(session.userData.ltMem, 'hotel.name');
             console.log(remberedHotels);
-
             if (remberedHotels.length != 0) {
                 session.send("Please enter the city ?")
                 var msg = new builder.Message(session)
@@ -43,6 +42,7 @@ var getHotels = function(session, args, next, builder) {
 var getHotels01 = function(session, results, builder) {
     location = results.response.entity || results.response;
     memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
+    session.save();
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
         var msg = new builder.Message(session)
