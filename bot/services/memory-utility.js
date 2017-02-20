@@ -48,7 +48,6 @@ var rememberInfoBySubject = function(LTMem, subject) {
     if (!LTMem) return [];
     var result = [];
     LTMemTemp = LTMem.slice();
-    console.log(">>>>>>>>>>", LTMem);
     LTMemTemp.reverse();
     LTMemTemp.forEach(function(element) {
         if (element.subject == subject) result.push(element.content);

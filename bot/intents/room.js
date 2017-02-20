@@ -27,9 +27,9 @@
      if (answer == 'Yes' || answer === "Yes") {
          // turning off lights
          smartRoomUtil.turnOffLight();
-         session.send("I have turned off the lights and I will inform hotel staff not disturb you !!");
+         session.send("I have turned off the lights and I will inform the hotel staff not to disturb you.");
      } else {
-         session.send(" Ok then I will inform staff not to distrub you")
+         session.send(" Ok then I will inform staff not to distrub you");
      }
  };
  module.exports = {

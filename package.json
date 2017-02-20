@@ -9,9 +9,11 @@
   "author": "Ajit Singh",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.16.1",
     "botbuilder": "^3.5.0",
     "chrono-node": "^1.2.5",
     "express": "^4.14.1",
+    "global-tunnel": "^1.2.0",
     "sync-request": "^4.0.1"
   }
 }

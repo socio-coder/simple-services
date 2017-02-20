@@ -80,8 +80,7 @@ var getHotels03 = function(session, results, builder) {
                 builder.Prompts.text(session, "Please enter another date.");
             } else {
                 if (dates.length == 2) {
-                    var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
-                    showHotels(session, hotels, builder);
+                    showHotels(session, builder, location, rating, dates, purpose);
                 }
             }
         }
@@ -95,8 +94,7 @@ var getHotels04 = function(session, results, builder) {
             break;
         case 1:
             dates.push(results.response);
-            var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
-            showHotels(session, hotels, builder);
+            showHotels(session, builder, location, rating, dates, purpose);
             break;
         default:
             session.send("Something wrong with me, I need to talk to my developer !!");
@@ -105,25 +103,182 @@ var getHotels04 = function(session, results, builder) {
 };
 var getHotels05 = function(session, results, builder) {
     dates.push(results.response);
-    var hotels = backendUtility.getHotels('1234', location, rating, dates, purpose);
-    showHotels(session, hotels, builder);
+    showHotels(session, builder, location, rating, dates, purpose);
 }
 
-var showHotels = function(session, hotels, builder) {
-    console.log("Inside show hotels.");
-
+var showHotels = function(session, builder, location, rating, dates, purpose) {
+    console.log("Inside show hotels");
+    session.userData.searchDetail = {};
+    session.userData.searchDetail.location = location;
+    session.userData.searchDetail.dates = dates;
+    session.userData.searchDetail.purpose = purpose;
+    session.save();
+    var hotels = backendUtility.getHotels(session.message.user.id, location, rating, dates, purpose, session.message.user.id);
+    var hotelList = [];
+    hotels.forEach(function(element) {
+        var card = new builder.HeroCard(session)
+            .title(element.name)
+            .text("Rating: " + element.starRating + " User rating: " + element.userRating)
+            .images([
+                builder.CardImage.create(session, element.hotelImage)
+            ]).buttons([
+                builder.CardAction.imBack(session, "Hotel Selected:" + element.hotelCode, "Select")
+            ]);
+        hotelList.push(card);
+    }, this);
+    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(hotelList);
+    session.send(msg);
 };
+
+
+var hotel = {
+    "id": "58a9e5d1993f1cf4c16bff1d",
+    "name": "Radisson Blu",
+    "hotelCode": "RB04",
+    "floors": ["1", "2", "3", "4"],
+    "purpose": [
+        "Business",
+        "Personal"
+    ],
+    "hotelImage": "https://project-xenia-images.herokuapp.com/fab-hotel.png",
+    "normalRoomImage": "https://project-xenia-images.herokuapp.com/fab-normal.png",
+    "deluxeRoomImage": "https://project-xenia-images.herokuapp.com/fab-deluxe.png",
+    "normalRoomRate": "2000",
+    "deluxeRoomRate": "4500",
+    "starRating": 3,
+    "userRating": 4.1,
+    "address": {
+        "city": "Mysore",
+        "state": "Karnataka",
+        "address": "#15, Mysore Bangalore Road, Adjacent Jss Medical College, Bannimantap",
+        "postalCode": 570015,
+        "country": "India"
+    },
+    "facilities": null,
+    "food": [{
+            "name": "Schezwan Chicken Noodles",
+            "price": 300,
+            "type": "Chinese"
+        },
+        {
+            "name": "Alfredo Pasta(Veg)",
+            "price": 350,
+            "type": "Italian"
+        },
+        {
+            "name": "Chilli Chicken",
+            "price": 320,
+            "type": "Chinese"
+        },
+        {
+            "name": "Butter Kulcha",
+            "price": 50,
+            "type": "Indian"
+        },
+        {
+            "name": "Paneer Butter Masala",
+            "price": 250,
+            "type": "Indian"
+        }
+    ],
+    "rooms": [{
+            "roomNumber": 107,
+            "floor": 1,
+            "size": "Single",
+            "type": "Deluxe",
+            "rate": 1500,
+            "deviceAddress": "https://fab-107.com/xenia-smart-room-services/v1/devices"
+        },
+        {
+            "roomNumber": 209,
+            "floor": 2,
+            "size": "Single",
+            "type": "Normal",
+            "rate": 750,
+            "deviceAddress": "https://fab-209.com/xenia-smart-room-services/v1/devices"
+        },
+        {
+            "roomNumber": 211,
+            "floor": 2,
+            "size": "Double",
+            "type": "Normal",
+            "rate": 1000,
+            "deviceAddress": "https://fab-211.com/xenia-smart-room-services/v1/devices"
+        },
+        {
+            "roomNumber": 301,
+            "floor": 3,
+            "size": "Double",
+            "type": "Deluxe",
+            "rate": 2000,
+            "deviceAddress": "https://fab-301.com/xenia-smart-room-services/v1/devices"
+        }
+    ]
+};
+
+var hotelcode, floorNumber, roomType, guestName;
 
 var bookRoom = function(session, args, next, builder) {
+    hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
+    console.log("Getting details for hotel Code:", hotelCode);
+    console.log("Saved search details", session.userData.searchDetail);
+    // var hotel = backendUtility.getHotel(hotelCode);
+    builder.Prompts.choice(session, "Choose your floor number ?", hotel.floors);
+};
+var bookRoom01 = function(session, results, builder) {
+    floorNumber = results.response.entity || results.response;
+    var roomList = [
+        new builder.HeroCard(session)
+        .title("Deluxe Room")
+        .text("Price " + hotel.deluxeRoomRate + " INR")
+        .images([
+            builder.CardImage.create(session, hotel.deluxeRoomImage)
+        ]),
+        new builder.HeroCard(session)
+        .title("Normal Room")
+        .text("Price " + hotel.deluxeRoomRate + " INR")
+        .images([
+            builder.CardImage.create(session, hotel.normalRoomImage)
+        ])
+    ];
+    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(roomList);
+    session.send(msg);
+    builder.Prompts.choice(session, "Which Room", ["Deluxe", "Normal"]);
+};
+
+var bookRoom02 = function(session, results, builder) {
+    roomType = results.response.entity || results.response;
+    builder.Prompts.number(session, "How many guests ?");
+}
+
+var bookRoom03 = function(session, results, builder) {
+    var numberOfGuests = results.response.entity || results.response;
+    if (numberOfGuests != "1") {
+        builder.Prompts.text(session, "Please tell me the name of other guest ?");
+    } else {
+        makeBooking(session, hotelCode, floorNumber, roomType);
+    }
+};
+
+var bookRoom04 = function(session, results, builder) {
+    guestName = results.response.entity || results.response;
+    makeBooking(session, hotelCode, floorNumber, roomType, guestName);
 
 };
-var _bookRoom = function(session, results, builder) {
 
-};
-
-var getBooking = function(session, args, next, builder) {
-
-};
+var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName) {
+    var data = {
+        "checkinDate": session.userData.searchDetail.dates[0],
+        "checkoutDate": session.userData.searchDetail.dates[1],
+        "cotravellers": [guestName],
+        "floorNumber": floorNumber,
+        "hotelCode": hotelCode,
+        "purpose": session.userData.searchDetail.purpose,
+        "roomType": roomType,
+        "userId": session.message.user.id
+    };
+    console.log(data);
+}
 
 module.exports = {
     getHotels: getHotels,
@@ -131,8 +286,11 @@ module.exports = {
     getHotels02: getHotels02,
     getHotels03: getHotels03,
     getHotels04: getHotels04,
-    getHotels05: getHotels05
-        // bookRoom: bookRoom,
-        // _bookRoom: _bookRoom,
+    getHotels05: getHotels05,
+    bookRoom: bookRoom,
+    bookRoom01: bookRoom01,
+    bookRoom02: bookRoom02,
+    bookRoom03: bookRoom03,
+    bookRoom04: bookRoom04
         // getBooking: getBooking
 };
