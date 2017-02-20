@@ -1,5 +1,20 @@
 var builder = require('botbuilder');
 
+var nodger = require('./services/nodger');
+nodger.configure({
+    fileLog: {
+        status: true,
+        path: "./conversationLogs.log"
+    },
+    httpLog: {
+        status: true,
+        host: "localhost",
+        port: "9800"
+    }
+
+});
+
+
 /*importing intents */
 var greeting = require('./intents/greeting');
 var hotel = require('./intents/hotel');
@@ -23,6 +38,19 @@ var intent = new builder.IntentDialog({ recognizers: [recognizer] });
 
 // bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 // bot.use(builder.Middleware.firstRun({ version: 1.0, dialogId: 'profile:/', upgradeDialogId: 'profile:/' }));
+
+bot.use({
+    botbuilder: function(session, next) {
+        var logData = {
+            // channel: session.dialogData.BotBuilder.Data
+            channelId: session.message.address.channelId,
+            username: session.message.user.name,
+            message: session.message.text
+        }
+        nodger.log(logData.channelId + " " + logData.username + " " + logData.message);
+        next();
+    }
+});
 
 bot.dialog('/', intent);
 

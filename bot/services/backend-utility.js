@@ -2,13 +2,14 @@
 var chronoNode = require('chrono-node');
 var httpService = require('./http-services');
 
+var backendAddress = "http://localhost:8080";
 
 function signUp(user) {
     return "success";
 }
 
 function getHotels(userId, location, rating, dates, purpose) {
-    var url = "http://localhost:8080/xenia/v1/hotels";
+    var url = backendAddress + "/xenia/v1/hotels";
     if (typeof dates[0] != "string") {
         dates[0] = dates[0].entity;
     }
@@ -52,10 +53,19 @@ function getHotels(userId, location, rating, dates, purpose) {
 }
 
 function getHotel(hotelCode) {
+    var url = backendAddress + "/xenia/v1/hotel?hotelCode=" + hotelCode;
+    var hotel = JSON.parse(httpService.post(url));
+    return hotel;
+}
 
+function makeBooking(data) {
+    var url = backendAddress + "/xenia/v1/bookings";
+    var bookingResponse = JSON.parse(httpService.post(url, data));
+    return bookingResponse;
 }
 
 module.exports = {
     getHotels: getHotels,
-    getHotel: getHotel
+    getHotel: getHotel,
+    makeBooking: makeBooking
 }

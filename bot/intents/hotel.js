@@ -130,99 +130,13 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
     session.send(msg);
 };
 
-
-var hotel = {
-    "id": "58a9e5d1993f1cf4c16bff1d",
-    "name": "Radisson Blu",
-    "hotelCode": "RB04",
-    "floors": ["1", "2", "3", "4"],
-    "purpose": [
-        "Business",
-        "Personal"
-    ],
-    "hotelImage": "https://project-xenia-images.herokuapp.com/fab-hotel.png",
-    "normalRoomImage": "https://project-xenia-images.herokuapp.com/fab-normal.png",
-    "deluxeRoomImage": "https://project-xenia-images.herokuapp.com/fab-deluxe.png",
-    "normalRoomRate": "2000",
-    "deluxeRoomRate": "4500",
-    "starRating": 3,
-    "userRating": 4.1,
-    "address": {
-        "city": "Mysore",
-        "state": "Karnataka",
-        "address": "#15, Mysore Bangalore Road, Adjacent Jss Medical College, Bannimantap",
-        "postalCode": 570015,
-        "country": "India"
-    },
-    "facilities": null,
-    "food": [{
-            "name": "Schezwan Chicken Noodles",
-            "price": 300,
-            "type": "Chinese"
-        },
-        {
-            "name": "Alfredo Pasta(Veg)",
-            "price": 350,
-            "type": "Italian"
-        },
-        {
-            "name": "Chilli Chicken",
-            "price": 320,
-            "type": "Chinese"
-        },
-        {
-            "name": "Butter Kulcha",
-            "price": 50,
-            "type": "Indian"
-        },
-        {
-            "name": "Paneer Butter Masala",
-            "price": 250,
-            "type": "Indian"
-        }
-    ],
-    "rooms": [{
-            "roomNumber": 107,
-            "floor": 1,
-            "size": "Single",
-            "type": "Deluxe",
-            "rate": 1500,
-            "deviceAddress": "https://fab-107.com/xenia-smart-room-services/v1/devices"
-        },
-        {
-            "roomNumber": 209,
-            "floor": 2,
-            "size": "Single",
-            "type": "Normal",
-            "rate": 750,
-            "deviceAddress": "https://fab-209.com/xenia-smart-room-services/v1/devices"
-        },
-        {
-            "roomNumber": 211,
-            "floor": 2,
-            "size": "Double",
-            "type": "Normal",
-            "rate": 1000,
-            "deviceAddress": "https://fab-211.com/xenia-smart-room-services/v1/devices"
-        },
-        {
-            "roomNumber": 301,
-            "floor": 3,
-            "size": "Double",
-            "type": "Deluxe",
-            "rate": 2000,
-            "deviceAddress": "https://fab-301.com/xenia-smart-room-services/v1/devices"
-        }
-    ]
-};
-
 var hotelcode, floorNumber, roomType, guestName;
 
 var bookRoom = function(session, args, next, builder) {
     hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
     console.log("Getting details for hotel Code:", hotelCode);
     console.log("Saved search details", session.userData.searchDetail);
-    // var hotel = backendUtility.getHotel(hotelCode);
+    var hotel = backendUtility.getHotel(hotelCode);
     builder.Prompts.choice(session, "Choose your floor number ?", hotel.floors);
 };
 var bookRoom01 = function(session, results, builder) {
@@ -277,7 +191,8 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
         "roomType": roomType,
         "userId": session.message.user.id
     };
-    console.log(data);
+    var bookingDetails = backendUtility.makeBooking(data);
+    console.log(bookingDetails);
 }
 
 module.exports = {
