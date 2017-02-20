@@ -4,11 +4,8 @@ var httpService = require('./http-services');
 
 var backendAddress = "http://localhost:8080";
 
-function signUp(user) {
-    return "success";
-}
-
 function getHotels(userId, location, rating, dates, purpose) {
+
     var url = backendAddress + "/xenia/v1/hotels";
     if (typeof dates[0] != "string") {
         dates[0] = dates[0].entity;
@@ -54,7 +51,7 @@ function getHotels(userId, location, rating, dates, purpose) {
 
 function getHotel(hotelCode) {
     var url = backendAddress + "/xenia/v1/hotel?hotelCode=" + hotelCode;
-    var hotel = JSON.parse(httpService.post(url));
+    var hotel = httpService.post(url);
     return hotel;
 }
 

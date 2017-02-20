@@ -7,7 +7,7 @@ var rating;
 var purpose;
 
 var getHotels = function(session, args, next, builder) {
-
+    console.log("Searching for hotels Initiated.");
     location = builder.EntityRecognizer.findEntity(args.entities, 'location');
     dates = builder.EntityRecognizer.findAllEntities(args.entities, 'builtin.datetime.date');
     rating = builder.EntityRecognizer.findEntity(args.entities, 'rating');
@@ -35,6 +35,7 @@ var getHotels = function(session, args, next, builder) {
     }
 };
 var getHotels01 = function(session, results, builder) {
+    console.log("Location recieved.");
     location = results.response.entity || results.response;
     session.userData.ltMem = memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
     session.save();
@@ -53,6 +54,7 @@ var getHotels01 = function(session, results, builder) {
     }
 };
 var getHotels02 = function(session, results, builder) {
+    console.log("Purpose recieved");
     purpose = results.response.entity || results.response;
     if (!rating) {
         var buttonsList = ['5 star', '4 star', '3 star', 'all'];
@@ -69,6 +71,7 @@ var getHotels02 = function(session, results, builder) {
     }
 };
 var getHotels03 = function(session, results, builder) {
+    console.log("Rating recieved.");
     rating = results.response.entity || results.response;
     if (dates) {
         if (dates.length == 0) {
@@ -87,6 +90,7 @@ var getHotels03 = function(session, results, builder) {
     }
 };
 var getHotels04 = function(session, results, builder) {
+    console.log("Based on input status selecting date");
     switch (session.dialogData.inputStatus) {
         case 0:
             dates.push(results.response);
@@ -102,6 +106,7 @@ var getHotels04 = function(session, results, builder) {
     }
 };
 var getHotels05 = function(session, results, builder) {
+    console.log("Dates recieved");
     dates.push(results.response);
     showHotels(session, builder, location, rating, dates, purpose);
 }
@@ -131,15 +136,21 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
 };
 
 var hotelcode, floorNumber, roomType, guestName;
+var hotel;
 
 var bookRoom = function(session, args, next, builder) {
+    console.log("Inside book room");
+    floorNumber = ["1", "2", "3", "4"];
     hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
     console.log("Getting details for hotel Code:", hotelCode);
     console.log("Saved search details", session.userData.searchDetail);
-    var hotel = backendUtility.getHotel(hotelCode);
-    builder.Prompts.choice(session, "Choose your floor number ?", hotel.floors);
+    hotel = backendUtility.getHotel(hotelCode);
+    console.log('hotel>>>>>>>>', hotel);
+    builder.Prompts.choice(session, "Choose your floor number ?", floorNumber);
 };
 var bookRoom01 = function(session, results, builder) {
+    console.log('hotel>>>>>>>>', hotel);
+    console.log("floorNumber");
     floorNumber = results.response.entity || results.response;
     var roomList = [
         new builder.HeroCard(session)
@@ -161,11 +172,13 @@ var bookRoom01 = function(session, results, builder) {
 };
 
 var bookRoom02 = function(session, results, builder) {
+    console.log("roomType");
     roomType = results.response.entity || results.response;
     builder.Prompts.number(session, "How many guests ?");
 }
 
 var bookRoom03 = function(session, results, builder) {
+    console.log("numberOfGuests");
     var numberOfGuests = results.response.entity || results.response;
     if (numberOfGuests != "1") {
         builder.Prompts.text(session, "Please tell me the name of other guest ?");
@@ -175,6 +188,7 @@ var bookRoom03 = function(session, results, builder) {
 };
 
 var bookRoom04 = function(session, results, builder) {
+    console.log("guestName");
     guestName = results.response.entity || results.response;
     makeBooking(session, hotelCode, floorNumber, roomType, guestName);
 
@@ -185,14 +199,16 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
         "checkinDate": session.userData.searchDetail.dates[0],
         "checkoutDate": session.userData.searchDetail.dates[1],
         "cotravellers": [guestName],
-        "floorNumber": floorNumber,
+        "floorNumber": parseInt(floorNumber),
         "hotelCode": hotelCode,
         "purpose": session.userData.searchDetail.purpose,
         "roomType": roomType,
-        "userId": session.message.user.id
+        "userId": Number(session.message.user.id)
     };
+    console.log("<<<<<<<?>>>>>>>>>>>Data:", data);
     var bookingDetails = backendUtility.makeBooking(data);
     console.log(bookingDetails);
+
 }
 
 module.exports = {
