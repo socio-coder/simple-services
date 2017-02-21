@@ -7,7 +7,7 @@ nodger.configure({
         path: "./conversationLogs.log"
     },
     httpLog: {
-        status: true,
+        status: false,
         host: "localhost",
         port: "9800"
     }
@@ -41,13 +41,14 @@ var intent = new builder.IntentDialog({ recognizers: [recognizer] });
 
 bot.use({
     botbuilder: function(session, next) {
-        var logData = {
-            // channel: session.dialogData.BotBuilder.Data
-            channelId: session.message.address.channelId,
-            username: session.message.user.name,
-            message: session.message.text
-        }
-        nodger.log(logData.channelId + " " + logData.username + " " + logData.message);
+        // console.log(session.message.entities[0].geo.latitude, session.message.entities[0].geo.longitude);
+        // var logData = {
+        //     // channel: session.dialogData.BotBuilder.Data
+        //     channelId: session.message.address.channelId,
+        //     username: session.message.user.name,
+        //     message: session.message.text
+        // }
+        // nodger.log(logData.channelId + " " + logData.username + " " + logData.message);
         next();
     }
 });
@@ -72,16 +73,24 @@ intent.matches('hotel.makebooking', [
     function(session, results) { hotel.bookRoom04(session, results, builder) },
 
 ]);
+
 intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
+
 intent.matches('food.menu', function(session, args, next) {});
+
 intent.matches('room.device.on', function(session, args, next) { room.lightsOn(session, args, next, builder) });
 intent.matches('room.device.off', function(session, args, next) { room.lightsOff(session, args, next, builder) });
 intent.matches('room.device.lights', [
     function(session, args, next) { room.lights(session, args, next, builder) },
     function(session, args, next) { room.lights01(session, args, next, builder) }
 ]);
+
 intent.matches('user.entertain', function(session, args, next) { activity.getEvents(session, args, next, builder) }); // done
-intent.matches('places.nearby', function(session, args, next) { places.nearby(session, args, next, builder) });
+
+intent.matches('places.nearby', [
+    function(session, args, next) { places.nearby(session, args, next, builder) },
+    function(session, results) { places.nearby01(session, results, builder) }
+]);
 intent.onDefault(builder.DialogAction.send("Sorry but sometime I don't know what you want and this is that exact moment !!"));
 
 //webhook code

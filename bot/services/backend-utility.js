@@ -51,13 +51,16 @@ function getHotels(userId, location, rating, dates, purpose) {
 
 function getHotel(hotelCode) {
     var url = backendAddress + "/xenia/v1/hotel?hotelCode=" + hotelCode;
-    var hotel = httpService.post(url);
+    console.log(url);
+    var hotel = JSON.parse(httpService.get(url));
     return hotel;
 }
 
 function makeBooking(data) {
     var url = backendAddress + "/xenia/v1/bookings";
+    console.log(url);
     var bookingResponse = JSON.parse(httpService.post(url, data));
+    console.log(bookingResponse);
     return bookingResponse;
 }
 

@@ -1,6 +1,6 @@
 var backendUtility = require('../services/backend-utility');
 var memoryUtility = require('../services/memory-utility');
-
+var builder = require('botbuilder');
 var location;
 var dates = [];
 var rating;
@@ -17,7 +17,7 @@ var getHotels = function(session, args, next, builder) {
             var remberedHotels = memoryUtility.rememberInfoBySubject(session.userData.ltMem, 'hotel.name');
             console.log(remberedHotels);
             if (remberedHotels.length != 0) {
-                session.send("Please enter the city ?")
+                session.send("Please enter the city ?  🌇🌇")
                 var buttonsList = [];
                 remberedHotels.forEach(function(element) {
                     buttonsList.push(builder.CardAction.imBack(session, element, element));
@@ -25,7 +25,7 @@ var getHotels = function(session, args, next, builder) {
                 var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text("Last time you searched").buttons(buttonsList)]);
                 builder.Prompts.text(session, msg);
             } else {
-                builder.Prompts.text(session, "Please enter the city ?");
+                builder.Prompts.text(session, "Please enter the city ? 🌇🌇");
             }
         } else {
             next({ response: session.userData.stMem.content });
@@ -48,7 +48,7 @@ var getHotels01 = function(session, results, builder) {
                 new builder.HeroCard(session)
                 .buttons(buttonsList)
             ]);
-        builder.Prompts.choice(session, "What is your purpose ?", buttonsList);
+        builder.Prompts.choice(session, " What is your purpose ? 💼 🎉", buttonsList);
     } else {
         next({ response: purpose });
     }
@@ -119,23 +119,32 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
     session.userData.searchDetail.purpose = purpose;
     session.save();
     var hotels = backendUtility.getHotels(session.message.user.id, location, rating, dates, purpose, session.message.user.id);
-    var hotelList = [];
-    hotels.forEach(function(element) {
-        var card = new builder.HeroCard(session)
-            .title(element.name)
-            .text("Rating: " + element.starRating + " User rating: " + element.userRating)
-            .images([
-                builder.CardImage.create(session, element.hotelImage)
-            ]).buttons([
-                builder.CardAction.imBack(session, "Hotel Selected:" + element.hotelCode, "Select")
-            ]);
-        hotelList.push(card);
-    }, this);
-    var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(hotelList);
+    if (hotels) {
+        if (hotels.length > 1) {
+            var hotelList = [];
+            hotels.forEach(function(element) {
+                var card = new builder.HeroCard(session)
+                    .title(element.name)
+                    .text("Rating: " + element.starRating + " User rating: " + element.userRating)
+                    .images([
+                        builder.CardImage.create(session, element.hotelImage)
+                    ]).buttons([
+                        builder.CardAction.imBack(session, "Hotel Selected:" + element.hotelCode, "Select")
+                    ]);
+                hotelList.push(card);
+            }, this);
+            var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(hotelList);
+        } else {
+            var msg = "Sorry ! The hotel you are looking for are not available. :'(";
+        }
+    } else {
+        var msg = "Sorry ! The hotel you are looking for are not available. :'(";
+    }
+
     session.send(msg);
 };
 
-var hotelcode, floorNumber, roomType, guestName;
+var hotelcode, floorNumber, roomType, guestName = "";
 var hotel;
 
 var bookRoom = function(session, args, next, builder) {
@@ -144,7 +153,7 @@ var bookRoom = function(session, args, next, builder) {
     hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
     console.log("Getting details for hotel Code:", hotelCode);
     console.log("Saved search details", session.userData.searchDetail);
-    hotel = backendUtility.getHotel(hotelCode);
+    hotel = backendUtility.getHotel(hotelCode.toUpperCase());
     console.log('hotel>>>>>>>>', hotel);
     builder.Prompts.choice(session, "Choose your floor number ?", floorNumber);
 };
@@ -198,16 +207,29 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
     var data = {
         "checkinDate": session.userData.searchDetail.dates[0],
         "checkoutDate": session.userData.searchDetail.dates[1],
-        "cotravellers": [guestName],
+        "cotravellers": null,
         "floorNumber": parseInt(floorNumber),
-        "hotelCode": hotelCode,
+        "hotelCode": hotelCode.toUpperCase(),
         "purpose": session.userData.searchDetail.purpose,
         "roomType": roomType,
         "userId": Number(session.message.user.id)
     };
     console.log("<<<<<<<?>>>>>>>>>>>Data:", data);
     var bookingDetails = backendUtility.makeBooking(data);
-    console.log(bookingDetails);
+    var msg = new builder.Message(session)
+        .attachments([
+            new builder.ReceiptCard(session)
+            .title(session.message.user.name)
+            .items([
+                builder.ReceiptItem.create(session, bookingDetails.totalCost, bookingDetails.hotelName).image(builder.CardImage.create(session, bookingDetails.imageURL)),
+            ])
+            .facts([
+                builder.Fact.create(session, bookingDetails.bookingId, "Order Number"),
+                builder.Fact.create(session, "VISA 4076", "Payment Method")
+            ])
+            .total(bookingDetails.totalCost)
+        ]);
+    session.send(msg);
 
 }
 
