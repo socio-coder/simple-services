@@ -64,8 +64,17 @@ function makeBooking(data) {
     return bookingResponse;
 }
 
+function getCheckinDetails(data) {
+    var url = backendAddress + "/xenia/v1/qrCode";
+    console.log("Getting check in details from Url:", url);
+    var checkinData = JSON.parse(httpService.post(url, data));
+    console.log("Got checkin data:", checkinData);
+    return checkinData;
+};
+
 module.exports = {
     getHotels: getHotels,
     getHotel: getHotel,
-    makeBooking: makeBooking
+    makeBooking: makeBooking,
+    getCheckinDetails: getCheckinDetails
 }
