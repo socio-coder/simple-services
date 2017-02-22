@@ -42,13 +42,17 @@ var intent = new builder.IntentDialog({ recognizers: [recognizer] });
 bot.use({
     botbuilder: function(session, next) {
         // console.log(session.message.entities[0].geo.latitude, session.message.entities[0].geo.longitude);
-        // var logData = {
-        //     // channel: session.dialogData.BotBuilder.Data
-        //     channelId: session.message.address.channelId,
-        //     username: session.message.user.name,
-        //     message: session.message.text
-        // }
-        // nodger.log(logData.channelId + " " + logData.username + " " + logData.message);
+        // console.log(session);
+        var logData = {
+            // channel: session.dialogData.BotBuilder.Data
+            channelId: session.message.address.channelId,
+            username: session.message.user.name,
+            message: session.message.text
+                // intent: session.dialogData['BotBuilder.Data.Intent']
+        };
+        // console.log(session.message);
+        // console.log("Channel ID: " + logData.channelId + " Username: " + logData.username + " Intent: " + logData.intent + " Message: " + logData.message)
+        // nodger.log("Channel ID: "+logData.channelId + " Username: " + logData.username +" Intent: "+intent+" Message: " + logData.message);
         next();
     }
 });
@@ -71,9 +75,12 @@ intent.matches('hotel.makebooking', [
     function(session, results) { hotel.bookRoom02(session, results, builder) },
     function(session, results) { hotel.bookRoom03(session, results, builder) },
     function(session, results) { hotel.bookRoom04(session, results, builder) },
-
+    function(session, results) { hotel.getCheckinDetails(session, results, builder) }
 ]);
-
+intent.matches('hotel.getdirection', [
+    function(session, args, next) { hotel.getDirection(session, args, next, builder) },
+    function(session, results) { hotel.getDirection01(session, results, builder) }
+]);
 intent.matches('hotel.getbookings', function(session, args, next) { hotel.getBooking(session, args, next, builder) });
 
 intent.matches('food.menu', function(session, args, next) {});

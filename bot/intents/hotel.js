@@ -202,6 +202,7 @@ var bookRoom04 = function(session, results, builder) {
     makeBooking(session, hotelCode, floorNumber, roomType, guestName);
 
 };
+var bookingId
 
 var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName) {
     var data = {
@@ -214,8 +215,8 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
         "roomType": roomType,
         "userId": Number(session.message.user.id)
     };
-    console.log("<<<<<<<?>>>>>>>>>>>Data:", data);
     var bookingDetails = backendUtility.makeBooking(data);
+    bookingId = bookingDetails.bookingId;
     var msg = new builder.Message(session)
         .attachments([
             new builder.ReceiptCard(session)
@@ -231,6 +232,36 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
         ]);
     session.send(msg);
 
+    builder.Prompts.choice(session, "Will you checkin today ?", ["Yes", "No"]);
+
+}
+
+var getCheckingDetails = function(session, results, builder) {
+    var answer = results.response.entity || results.response;
+    console.log("checkin answer recieved:", answer);
+    var data = {
+        "bookingId": bookingId,
+        "name": session.message.user.name
+    };
+    if (answer == "Yes") {
+        var checkinDetails = backendUtility.getCheckinDetails(data);
+        var imageUrl = checkinDetails.qrCode.qrcodeLink;
+        console.log(imageUrl);
+        var card = new builder.HeroCard(session)
+            .title("Booking QR Code")
+            .text("Please scan this qr code at Kiosk at hotel reception.")
+            .images([
+                builder.CardImage.create(session, checkinDetails.qrCode.qrcodeLink)
+            ])
+            .tap(builder.CardAction.openUrl(session, checkinDetails.qrCode.qrcodeLink));
+        var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([card]);
+        session.send(msg);
+        session.send("Your room number is " + checkinDetails.roomNumber);
+        session.send(checkinDetails.weatherMessage);
+        session.endDialog();
+    } else {
+        session.send("Your booking has been cancelled. Hope you will choose us for next stay.");
+    }
 }
 
 module.exports = {
@@ -244,6 +275,7 @@ module.exports = {
     bookRoom01: bookRoom01,
     bookRoom02: bookRoom02,
     bookRoom03: bookRoom03,
-    bookRoom04: bookRoom04
+    bookRoom04: bookRoom04,
+    getCheckinDetails: getCheckingDetails
         // getBooking: getBooking
 };
