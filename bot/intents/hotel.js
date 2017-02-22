@@ -17,7 +17,7 @@ var getHotels = function(session, args, next, builder) {
             var remberedHotels = memoryUtility.rememberInfoBySubject(session.userData.ltMem, 'hotel.name');
             console.log(remberedHotels);
             if (remberedHotels.length != 0) {
-                session.send("Please enter the city ?  🌇🌇")
+                session.send("Please enter the city ?  🌇");
                 var buttonsList = [];
                 remberedHotels.forEach(function(element) {
                     buttonsList.push(builder.CardAction.imBack(session, element, element));
@@ -189,7 +189,7 @@ var bookRoom02 = function(session, results, builder) {
 var bookRoom03 = function(session, results, builder) {
     console.log("numberOfGuests");
     var numberOfGuests = results.response.entity || results.response;
-    if (numberOfGuests != "1") {
+    if (numberOfGuests > "1") {
         builder.Prompts.text(session, "Please tell me the name of other guest ?");
     } else {
         makeBooking(session, hotelCode, floorNumber, roomType);
@@ -264,6 +264,26 @@ var getCheckingDetails = function(session, results, builder) {
     }
 }
 
+var getDirection = function(session, args, next, builder) {
+    builder.Prompts.text(session, "Please provide your location.");
+};
+var getDirection01 = function(session, results, builder) {
+    try {
+        var lat = session.message.entities[0].geo.latitude;
+        var long = session.message.entities[0].geo.longitude;
+        console.log("lat", lat, "long", long);
+        var directions = backendUtility.getDirection(session.message.user.id);
+        var button = builder.CardAction.openUrl(session, "https://www.google.co.in/maps/dir/" + lat + "," + long + "/" + directions.locationCoordinates, "Open in maps");
+        var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text(directions.hotelName).buttons([button])]);
+        session.send(msg);
+
+    } catch (e) {
+        console.log(e);
+        session.send("Sorry ! Unable to fetch direction at this time :')")
+    }
+};
+
+
 module.exports = {
     getHotels: getHotels,
     getHotels01: getHotels01,
@@ -276,6 +296,8 @@ module.exports = {
     bookRoom02: bookRoom02,
     bookRoom03: bookRoom03,
     bookRoom04: bookRoom04,
-    getCheckinDetails: getCheckingDetails
+    getCheckinDetails: getCheckingDetails,
+    getDirection: getDirection,
+    getDirection01: getDirection01
         // getBooking: getBooking
 };

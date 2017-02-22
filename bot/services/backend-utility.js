@@ -72,9 +72,18 @@ function getCheckinDetails(data) {
     return checkinData;
 };
 
+function getDirection(userId) {
+    var url = backendAddress + "/xenia/v1/directions?userId=" + userId;
+    console.log("Getting direction for hotel.");
+    var directions = JSON.parse(httpService.get(url));
+    console.log("Direction:", directions);
+    return directions;
+};
+
 module.exports = {
     getHotels: getHotels,
     getHotel: getHotel,
     makeBooking: makeBooking,
-    getCheckinDetails: getCheckinDetails
+    getCheckinDetails: getCheckinDetails,
+    getDirection: getDirection
 }
