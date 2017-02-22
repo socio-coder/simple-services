@@ -15,7 +15,6 @@ var getHotels = function(session, args, next, builder) {
     if (!location) {
         if (memoryUtility.isFreshConversation(session.userData.stMem)) {
             var remberedHotels = memoryUtility.rememberInfoBySubject(session.userData.ltMem, 'hotel.name');
-            console.log(remberedHotels);
             if (remberedHotels.length != 0) {
                 session.send("Please enter the city ?  🌇");
                 var buttonsList = [];
@@ -35,44 +34,30 @@ var getHotels = function(session, args, next, builder) {
     }
 };
 var getHotels01 = function(session, results, builder) {
-    console.log("Location recieved.");
     location = results.response.entity || results.response;
+    console.log("Location:", location);
     session.userData.ltMem = memoryUtility.updateLTMem(session.userData.ltMem, { subject: 'hotel.name', content: location });
     session.save();
     if (!purpose) {
         var buttonsList = ['Business', 'Personal'];
-        var msg = new builder.Message(session)
-            .textFormat(builder.TextFormat.xml)
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments([
-                new builder.HeroCard(session)
-                .buttons(buttonsList)
-            ]);
         builder.Prompts.choice(session, " What is your purpose ? 💼 🎉", buttonsList);
     } else {
         next({ response: purpose });
     }
 };
 var getHotels02 = function(session, results, builder) {
-    console.log("Purpose recieved");
     purpose = results.response.entity || results.response;
+    console.log("Purpose:", purpose);
     if (!rating) {
-        var buttonsList = ['5 star', '4 star', '3 star', 'all'];
-        var msg = new builder.Message(session)
-            .textFormat(builder.TextFormat.xml)
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments([
-                new builder.HeroCard(session)
-                .buttons(buttonsList)
-            ]);
+        var buttonsList = ['5 🌟', '4 🌟', '3 🌟', 'all'];
         builder.Prompts.choice(session, "What is your preference ?", buttonsList);
     } else {
         next({ response: rating });
     }
 };
 var getHotels03 = function(session, results, builder) {
-    console.log("Rating recieved.");
     rating = results.response.entity || results.response;
+    console.log("Rating:", rating);
     if (dates) {
         if (dates.length == 0) {
             session.dialogData.inputStatus = 0;
@@ -106,18 +91,18 @@ var getHotels04 = function(session, results, builder) {
     }
 };
 var getHotels05 = function(session, results, builder) {
-    console.log("Dates recieved");
     dates.push(results.response);
+    console.log("Dates:", dates);
     showHotels(session, builder, location, rating, dates, purpose);
 }
 
 var showHotels = function(session, builder, location, rating, dates, purpose) {
-    console.log("Inside show hotels");
     session.userData.searchDetail = {};
     session.userData.searchDetail.location = location;
     session.userData.searchDetail.dates = dates;
     session.userData.searchDetail.purpose = purpose;
     session.save();
+    console.log("Getting hotels [", session.message.user.id, location, rating, dates, purpose, session.message.user.id, "]");
     var hotels = backendUtility.getHotels(session.message.user.id, location, rating, dates, purpose, session.message.user.id);
     if (hotels) {
         if (hotels.length > 1) {
@@ -129,7 +114,7 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
                     .images([
                         builder.CardImage.create(session, element.hotelImage)
                     ]).buttons([
-                        builder.CardAction.imBack(session, "Hotel Selected:" + element.hotelCode, "Select")
+                        builder.CardAction.imBack(session, "Hotel Selected:" + element.hotelCode, element.name)
                     ]);
                 hotelList.push(card);
             }, this);
@@ -144,23 +129,14 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
     session.send(msg);
 };
 
-var hotelcode, floorNumber, roomType, guestName = "";
+var hotelcode, roomType, guestName = "";
 var hotel;
 
-var bookRoom = function(session, args, next, builder) {
-    console.log("Inside book room");
-    floorNumber = ["1", "2", "3", "4"];
+var bookRoom01 = function(session, args, next, builder) {
     hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
-    console.log("Getting details for hotel Code:", hotelCode);
-    console.log("Saved search details", session.userData.searchDetail);
+    console.log("Hotel Code:", hotelcode);
     hotel = backendUtility.getHotel(hotelCode.toUpperCase());
-    console.log('hotel>>>>>>>>', hotel);
-    builder.Prompts.choice(session, "Choose your floor number ?", floorNumber);
-};
-var bookRoom01 = function(session, results, builder) {
-    console.log('hotel>>>>>>>>', hotel);
-    console.log("floorNumber");
-    floorNumber = results.response.entity || results.response;
+    session.send("Select your type of room ")
     var roomList = [
         new builder.HeroCard(session)
         .title("Deluxe Room")
@@ -170,51 +146,54 @@ var bookRoom01 = function(session, results, builder) {
         ]),
         new builder.HeroCard(session)
         .title("Normal Room")
-        .text("Price " + hotel.deluxeRoomRate + " INR")
+        .text("Price " + hotel.normalRoomRate + " INR")
         .images([
             builder.CardImage.create(session, hotel.normalRoomImage)
         ])
     ];
     var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(roomList);
     session.send(msg);
-    builder.Prompts.choice(session, "Which Room", ["Deluxe", "Normal"]);
+    builder.Prompts.choice(session, "which room?", ["Deluxe", "Normal"]);
 };
 
 var bookRoom02 = function(session, results, builder) {
-    console.log("roomType");
     roomType = results.response.entity || results.response;
-    builder.Prompts.number(session, "How many guests ?");
+    console.log("Room type:", roomType);
+    builder.Prompts.number(session, "How many people are travelling with you ?");
 }
 
 var bookRoom03 = function(session, results, builder) {
-    console.log("numberOfGuests");
-    var numberOfGuests = results.response.entity || results.response;
-    if (numberOfGuests > "1") {
-        builder.Prompts.text(session, "Please tell me the name of other guest ?");
+    var numberOfCotravellers = results.response.entity || results.response;
+    numberOfCotravellers = Number.parseInt(numberOfCotravellers);
+    console.log("Number of Co-travellers:", numberOfCotravellers);
+    if (numberOfCotravellers > 0) {
+        builder.Prompts.text(session, "Please tell me the name of co-travellers?");
     } else {
-        makeBooking(session, hotelCode, floorNumber, roomType);
+        makeBooking(session, hotelCode, "2", roomType);
     }
 };
 
 var bookRoom04 = function(session, results, builder) {
-    console.log("guestName");
     guestName = results.response.entity || results.response;
-    makeBooking(session, hotelCode, floorNumber, roomType, guestName);
+    console.log("Cotraveller Name:", guestName);
+    makeBooking(session, hotelCode, "2", roomType, guestName);
 
 };
-var bookingId
+var bookingId;
 
 var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName) {
     var data = {
         "checkinDate": session.userData.searchDetail.dates[0],
         "checkoutDate": session.userData.searchDetail.dates[1],
         "cotravellers": null,
-        "floorNumber": parseInt(floorNumber),
+        "floorNumber": "2",
         "hotelCode": hotelCode.toUpperCase(),
         "purpose": session.userData.searchDetail.purpose,
         "roomType": roomType,
         "userId": Number(session.message.user.id)
     };
+    console.log("Making Booking [", session.userData.searchDetail.dates[0], session.userData.searchDetail.dates[1], null, 4, hotelCode.toUpperCase(),
+        session.userData.searchDetail.purpose, roomType, Number(session.message.user.id), "]");
     var bookingDetails = backendUtility.makeBooking(data);
     bookingId = bookingDetails.bookingId;
     var msg = new builder.Message(session)
@@ -231,14 +210,15 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
             .total(bookingDetails.totalCost)
         ]);
     session.send(msg);
-
-    builder.Prompts.choice(session, "Will you checkin today ?", ["Yes", "No"]);
+    setTimeout(function() {
+        builder.Prompts.choice(session, "Will you checkin today ?", ["Yes", "No"]);
+    }, 10000);
 
 }
 
 var getCheckingDetails = function(session, results, builder) {
     var answer = results.response.entity || results.response;
-    console.log("checkin answer recieved:", answer);
+    console.log("Checkin answer:", answer);
     var data = {
         "bookingId": bookingId,
         "name": session.message.user.name
@@ -246,7 +226,6 @@ var getCheckingDetails = function(session, results, builder) {
     if (answer == "Yes") {
         var checkinDetails = backendUtility.getCheckinDetails(data);
         var imageUrl = checkinDetails.qrCode.qrcodeLink;
-        console.log(imageUrl);
         var card = new builder.HeroCard(session)
             .title("Booking QR Code")
             .text("Please scan this qr code at Kiosk at hotel reception.")
@@ -271,7 +250,7 @@ var getDirection01 = function(session, results, builder) {
     try {
         var lat = session.message.entities[0].geo.latitude;
         var long = session.message.entities[0].geo.longitude;
-        console.log("lat", lat, "long", long);
+        console.log("Location recieved [", "lat", lat, "long", long, "]");
         var directions = backendUtility.getDirection(session.message.user.id);
         var button = builder.CardAction.openUrl(session, "https://www.google.co.in/maps/dir/" + lat + "," + long + "/" + directions.locationCoordinates, "Open in maps");
         var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text(directions.hotelName).buttons([button])]);
@@ -291,7 +270,6 @@ module.exports = {
     getHotels03: getHotels03,
     getHotels04: getHotels04,
     getHotels05: getHotels05,
-    bookRoom: bookRoom,
     bookRoom01: bookRoom01,
     bookRoom02: bookRoom02,
     bookRoom03: bookRoom03,

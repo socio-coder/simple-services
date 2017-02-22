@@ -18,13 +18,13 @@ function getHotels(userId, location, rating, dates, purpose) {
     }
 
     switch (rating) {
-        case '5 star':
+        case '5 🌟':
             rating = 5;
             break;
-        case '4 star':
+        case '4 🌟':
             rating = 4;
             break;
-        case '3 star':
+        case '3 🌟':
             rating = 3;
             break;
         case 'all':

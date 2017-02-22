@@ -1,5 +1,5 @@
 var builder = require('botbuilder');
-
+var webhooks = require('./webhooks/webhooks');
 var nodger = require('./services/nodger');
 nodger.configure({
     fileLog: {
@@ -53,6 +53,7 @@ bot.use({
         // console.log(session.message);
         // console.log("Channel ID: " + logData.channelId + " Username: " + logData.username + " Intent: " + logData.intent + " Message: " + logData.message)
         // nodger.log("Channel ID: "+logData.channelId + " Username: " + logData.username +" Intent: "+intent+" Message: " + logData.message);
+        console.log("--------------------------------")
         next();
     }
 });
@@ -70,8 +71,7 @@ intent.matches('hotel.bookroom', [
     function(session, results) { hotel.getHotels05(session, results, builder) }
 ]);
 intent.matches('hotel.makebooking', [
-    function(session, args, next) { hotel.bookRoom(session, args, next, builder) },
-    function(session, results) { hotel.bookRoom01(session, results, builder) },
+    function(session, args, next) { hotel.bookRoom01(session, args, next, builder) },
     function(session, results) { hotel.bookRoom02(session, results, builder) },
     function(session, results) { hotel.bookRoom03(session, results, builder) },
     function(session, results) { hotel.bookRoom04(session, results, builder) },
@@ -104,29 +104,13 @@ intent.onDefault(builder.DialogAction.send("Sorry but sometime I don't know what
 
 function sendMessage(req, res) {
     var data = req.body;
-    if (data) {
-        var userId = data.userId;
-        var content = data.content;
-        var address = {
-            channelId: "facebook",
-            user: { id: userId },
-            bot: { id: "1872692346333930", name: "xenia" },
-            serviceUrl: "https://facebook.botframework.com",
-            useAuth: true,
-        }
-        console.log(address);
-        var msg = new builder.Message()
-            .address(address)
-            .text(content);
-        bot.send(msg);
-        res.send('<p>Message sent successfully.</p>');
-    } else {
-        res.send('<p>Error: Message body not found.</p>');
-    }
-
+    webhooks.sendBooking(bot, data).then(function(result) {
+        res.status(200).send(result);
+    }).catch(function(err) {
+        console.log("In catch");
+        res.status(400).send(err.message);
+    });
 }
-
-
 
 module.exports = {
     chatConnector: chatConnector,

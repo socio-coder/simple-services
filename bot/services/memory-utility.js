@@ -1,5 +1,4 @@
 var updateLTMem = function(LTMem, data) {
-    console.log("data>>>>", data);
     var MAX_SIZE = 10;
     if (!LTMem) LTMem = [];
     var memChunk = {
