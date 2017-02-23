@@ -49,7 +49,7 @@ var getHotels02 = function(session, results, builder) {
     purpose = results.response.entity || results.response;
     console.log("Purpose:", purpose);
     if (!rating) {
-        var buttonsList = ['5 🌟', '4 🌟', '3 🌟', 'all'];
+        var buttonsList = ['5 star', '4 star', '3 star', 'all'];
         builder.Prompts.choice(session, "What is your preference ?", buttonsList);
     } else {
         next({ response: rating });
@@ -194,6 +194,7 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
     };
     console.log("Making Booking [", session.userData.searchDetail.dates[0], session.userData.searchDetail.dates[1], data.cotravellers, 4, hotelCode.toUpperCase(),
         session.userData.searchDetail.purpose, roomType, Number(session.message.user.id), "]");
+    console.log(JSON.stringify(data));
     var bookingDetails = backendUtility.makeBooking(data);
     bookingId = bookingDetails.bookingId;
     var msg = new builder.Message(session)

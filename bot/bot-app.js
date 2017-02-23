@@ -104,6 +104,7 @@ intent.onDefault(builder.DialogAction.send("Sorry but sometime I don't know what
 
 function sendMessage(req, res) {
     var data = req.body;
+    console.log(data);
     webhooks.sendBooking(bot, data).then(function(result) {
         res.status(200).send(result);
     }).catch(function(err) {

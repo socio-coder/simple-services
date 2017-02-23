@@ -14,6 +14,7 @@ function sendBooking(bot, data) {
                 useAuth: true,
             }
             var session = builder.Session({ library: '', dialogId: new Date() });
+            console.log(">>>>>>>>>>WebHook:::", session);
             var msg = new builder.Message()
                 .address(address)
                 .text("Hi! " + content.name + " has made a booking with you, here are the booking details")
@@ -21,9 +22,11 @@ function sendBooking(bot, data) {
                 console.log("Web hook msg sent");
                 resolve("Message sent.");
             });
+            var checkinDate = new Date(content.checkinDate).getDate() + "-" + (new Date(content.checkinDate).getMonth() + 1) + "-" + new Date(content.checkinDate).getFullYear();
+            var checkoutDate = new Date(content.checkoutDate).getDate() + "-" + (new Date(content.checkoutDate).getMonth() + 1) + "-" + new Date(content.checkoutDate).getFullYear();
             var card = new builder.ThumbnailCard(session)
                 .title('Hotel Name: ' + content.hotelName)
-                .subtitle('Check in: ' + content.checkinDate + '\nCheck out: ' + content.checkOutDate + '\nCity: Mysore')
+                .subtitle('Check in: ' + checkinDate + '\nCheck out: ' + checkoutDate + '\nCity: ' + content.city);
             msg = new builder.Message()
                 .address(address)
                 .addAttachment(card);
@@ -32,7 +35,7 @@ function sendBooking(bot, data) {
                 resolve("Message sent.");
             });
         } else {
-            res.send('<p>Error: Message body not found.</p>');
+            reject("Message body not found");
         }
     });
 };
