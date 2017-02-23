@@ -52,8 +52,8 @@ bot.use({
         };
         // console.log(session.message);
         // console.log("Channel ID: " + logData.channelId + " Username: " + logData.username + " Intent: " + logData.intent + " Message: " + logData.message)
-        // nodger.log("Channel ID: "+logData.channelId + " Username: " + logData.username +" Intent: "+intent+" Message: " + logData.message);
-        console.log("--------------------------------")
+        // nodger.log("Channel ID: " + logData.channelId + " Username: " + logData.username + " Intent: " + intent + " Message: " + logData.message);
+        // console.log("--------------------------------")
         next();
     }
 });

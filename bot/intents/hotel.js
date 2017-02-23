@@ -129,12 +129,12 @@ var showHotels = function(session, builder, location, rating, dates, purpose) {
     session.send(msg);
 };
 
-var hotelcode, roomType, guestName = "";
+var hotelCode, roomType, guestName = "";
 var hotel;
 
 var bookRoom01 = function(session, args, next, builder) {
     hotelCode = builder.EntityRecognizer.findEntity(args.entities, 'hotelcode').entity;
-    console.log("Hotel Code:", hotelcode);
+    console.log("Hotel Code:", hotelCode);
     hotel = backendUtility.getHotel(hotelCode.toUpperCase());
     session.send("Select your type of room ")
     var roomList = [
@@ -192,7 +192,7 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
         "roomType": roomType,
         "userId": Number(session.message.user.id)
     };
-    console.log("Making Booking [", session.userData.searchDetail.dates[0], session.userData.searchDetail.dates[1], null, 4, hotelCode.toUpperCase(),
+    console.log("Making Booking [", session.userData.searchDetail.dates[0], session.userData.searchDetail.dates[1], data.cotravellers, 4, hotelCode.toUpperCase(),
         session.userData.searchDetail.purpose, roomType, Number(session.message.user.id), "]");
     var bookingDetails = backendUtility.makeBooking(data);
     bookingId = bookingDetails.bookingId;
@@ -252,7 +252,8 @@ var getDirection01 = function(session, results, builder) {
         var long = session.message.entities[0].geo.longitude;
         console.log("Location recieved [", "lat", lat, "long", long, "]");
         var directions = backendUtility.getDirection(session.message.user.id);
-        var button = builder.CardAction.openUrl(session, "https://www.google.co.in/maps/dir/" + lat + "," + long + "/" + directions.locationCoordinates, "Open in maps");
+        // var button = builder.CardAction.openUrl(session, "https://www.google.co.in/maps/dir/" + lat + "," + long + "/" + directions.locationCoordinates, "Open in maps");
+        var button = builder.CardAction.openUrl(session, "https://www.google.co.in/maps/dir/" + lat + "," + long + "/12.9731271,77.6467923", "Open in maps");
         var msg = new builder.Message(session).attachments([new builder.HeroCard(session).text(directions.hotelName).buttons([button])]);
         session.send(msg);
 
