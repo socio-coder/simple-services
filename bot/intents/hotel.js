@@ -185,7 +185,7 @@ var makeBooking = function(session, hotelCode, floorNumber, roomType, guestName)
     var data = {
         "checkinDate": session.userData.searchDetail.dates[0],
         "checkoutDate": session.userData.searchDetail.dates[1],
-        "cotravellers": null,
+        "cotravellers": [guestName],
         "floorNumber": "2",
         "hotelCode": hotelCode.toUpperCase(),
         "purpose": session.userData.searchDetail.purpose,
